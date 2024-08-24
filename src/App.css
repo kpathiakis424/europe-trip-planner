@@ -1,38 +1,85 @@
+/* App.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #270000;
+  color: #ffffff;
+}
+
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+} 
+
+.dark-theme {
+  --primary-color: #001c35;
+  --secondary-color: #01078468;
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --error-color: #cf6679;
+  --on-primary-color: #000000;
+  --on-secondary-color: #000000;
+  --on-background-color: #ffffff;
+  --on-surface-color: #ffffff;
+  --on-error-color: #000000;
 }
 
-.App-link {
-  color: #61dafb;
+.glass-container {
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 20px;
+  margin: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 10px;
 }
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bb86fc;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #03dac6;
+}
+
+/* Material UI overrides */
+.MuiButton-root {
+  background-color: var(--primary-color) !important;
+  color: var(--on-primary-color) !important;
+}
+
+.MuiButton-root:hover {
+  background-color: var(--secondary-color) !important;
+}
+
+.MuiInputBase-root {
+  color: var(--on-surface-color) !important;
+}
+
+.MuiInputLabel-root {
+  color: var(--on-surface-color) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--on-surface-color) !important;
+}
+
+/* Add more Material UI component overrides as needed */

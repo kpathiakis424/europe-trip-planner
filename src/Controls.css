@@ -1,0 +1,90 @@
+/* Controls.css */
+.controls {
+  background-color: #121212;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.controls button {
+  background-color: #5800006a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.controls button:hover {
+  background-color: #000341bd;
+  color: #ffffff;
+}
+
+.controls input[type="text"] {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+/* Glass mode effect */
+.glass-effect {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Styles moved from Controls.js */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.controls .MuiTabs-root {
+  margin-bottom: 16px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.controls .MuiTab-root {
+  color: #ffffff;
+}
+
+.controls .MuiToggleButtonGroup-root {
+  margin-bottom: 16px;
+  max-width: 100%;
+  width: 100%;
+  justify-content: center;
+}
+
+.controls .MuiToggleButton-root {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.controls .MuiToggleButton-root.Mui-selected {
+  background-color: rgba(187, 134, 252, 0.08);
+  color: #000524;
+}
+
+.controls .MuiButtonGroup-root {
+  max-width: 100%;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.controls .MuiButton-root {
+  color: #ffffff;
+}

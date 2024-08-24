@@ -1,0 +1,127 @@
+DetailView.css
+.detail-view {
+  background-color: #121212;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.detail-view h3 {
+  color: #00364a74;
+}
+
+.detail-view p {
+  margin: 10px 0;
+}
+
+.detail-view img {
+  max-width: 100%;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+/* Glass mode effect */
+.glass-effect {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* New styles */
+.attraction-card {
+  display: flex;
+  height: 150px;
+  width: 100%;
+  background-color: #1e1e1e;
+  position: relative;
+  color: #ffffff;
+}
+
+.attraction-card--starred {
+  background-color: rgba(187, 134, 252, 0.1);
+}
+
+.attraction-card__media {
+  width: 100px;
+}
+
+.attraction-card__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.attraction-card__title {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.attraction-card__address {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.attraction-card__type {
+  margin-right: 8px;
+  background-color: #002723;
+  color: #000000;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.attraction-card__actions {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  padding-bottom: 8px;
+}
+
+.attraction-card__star-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.icon-button--remove {
+  color: #cf6679;
+}
+
+.icon-button--add {
+  color: #002845;
+}
+
+.icon-button--select {
+  color: #004e36;
+}
+
+.detail-view__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.detail-view__title {
+  color: #ffffff;
+}
+
+.hotel-info__name {
+  color: #ffffff;
+}
+
+.hotel-info__address {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hotel-info__details {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.no-data {
+  color: #ffffff;
+}

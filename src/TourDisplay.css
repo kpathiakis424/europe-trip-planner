@@ -1,0 +1,37 @@
+  /* TourDisplay.css */
+  .tour-display {
+    background-color: #121212;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  } 
+
+  .tour-display h2 {
+    color: #0007355b;
+  }
+
+.tour-display ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+  .tour-display li {
+    background-color: #f0eaea;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+  } 
+
+  .tour-display li:hover {
+    transform: translateY(-5px);
+  }
+
+  /* Glass mode effect */
+  .glass-effect {
+    background: rgba(18, 18, 18, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }

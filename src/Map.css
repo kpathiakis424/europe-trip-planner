@@ -1,0 +1,31 @@
+/* Map.css */
+.map-container {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right,
+.mapboxgl-ctrl-top-left,
+.mapboxgl-ctrl-top-right {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.mapboxgl-popup-content {
+  background-color: #121212;
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: #121212 !important;
+}
+
+/* Glass mode effect for popups */
+.mapboxgl-popup-content.glass-effect {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

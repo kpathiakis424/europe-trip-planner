@@ -1,0 +1,40 @@
+/* TourCreator.css */
+.tour-creator {
+  background-color: #121212;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tour-creator input,
+.tour-creator select,
+.tour-creator button {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.tour-creator button {
+  background-color: #00135e6d;
+  color: #000000;
+  font-weight: bold;  
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tour-creator button:hover {
+  background-color: #000829bf;
+  color: #ffffff;
+}
+
+/* Glass mode effect */
+.glass-effect {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
