@@ -1,90 +1,144 @@
-/* Controls.css */
+/* Base styles */
 .controls {
-  background-color: #121212;
-  color: #ffffff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.controls button {
-  background-color: #5800006a;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.controls button:hover {
-  background-color: #000341bd;
-  color: #ffffff;
-}
-
-.controls input[type="text"] {
-  background-color: #1e1e1e;
-  color: #ffffff;
-  border: none;
-  padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
-}
-
-/* Glass mode effect */
-.glass-effect {
-  background: rgba(18, 18, 18, 0.7);
+  background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Styles moved from Controls.js */
-.controls {
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  padding: 16px;
-  border-radius: 4px;
-}
-
-.controls .MuiTabs-root {
-  margin-bottom: 16px;
+  margin: 1rem 0;
   max-width: 100%;
-  width: 100%;
+  box-sizing: border-box;
 }
 
-.controls .MuiTab-root {
-  color: #ffffff;
+/* Day stepper */
+.day-stepper {
+  width: 100%;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.controls .MuiToggleButtonGroup-root {
-  margin-bottom: 16px;
-  max-width: 100%;
-  width: 100%;
+.MuiTabs-root {
+  min-height: 48px;
+}
+
+.MuiTab-root {
+  min-height: 48px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* City selector */
+.city-selector {
+  margin-bottom: 1rem;
+  background-color: rgba(233, 236, 239, 0.8);
+  margin-top: 10px;  
+  border-radius: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
-.controls .MuiToggleButton-root {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.12);
+.MuiToggleButton-root {
+  color: #495057;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border: none;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+  min-width: 5rem;
+  border-radius: 0.5rem;
 }
 
-.controls .MuiToggleButton-root.Mui-selected {
-  background-color: rgba(187, 134, 252, 0.08);
-  color: #000524;
+.MuiToggleButton-root.Mui-selected {
+  background-color: #ff9800;
+  color: white;
+  box-shadow: 0 0.2rem 0.5rem rgba(255, 152, 0, 0.4);
 }
 
-.controls .MuiButtonGroup-root {
-  max-width: 100%;
-  width: 100%;
+/* Detail selector */
+.detail-selector {
+  background-color: rgba(233, 236, 239, 0.8);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 16px;
+  width: 100%;
 }
 
-.controls .MuiButton-root {
-  color: #ffffff;
+.MuiButtonGroup-root {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.MuiButtonGroup-root .MuiButton-root {
+  border: none;
+  color: #495057;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+  border-radius: 0.5rem;
+  text-transform: none;
+  font-weight: 500;
+  min-width: 0;
+  flex-basis: calc(25% - 8px);
+  margin: 4px;
+}
+
+.MuiButtonGroup-root .MuiButton-root:hover {
+  background-color: rgba(255, 152, 0, 0.1);
+}
+
+.MuiButtonGroup-root .MuiButton-root.Mui-selected,
+.MuiButtonGroup-root .MuiButton-containedPrimary {
+  background-color: #ff9800;
+  color: white;
+  box-shadow: 0 0.2rem 0.5rem rgba(255, 152, 0, 0.4);
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .controls {
+    padding: 0.75rem;
+  }
+
+  .MuiTab-root {
+    font-size: 0.75rem;
+    min-width: auto;
+    padding: 6px 12px;
+  }
+
+  .MuiToggleButton-root,
+  .MuiButtonGroup-root .MuiButton-root {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    min-width: 0;
+  }
+
+  .city-selector,
+  .detail-selector {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .MuiToggleButton-root {
+    flex-basis: calc(50% - 8px);
+  }
+
+  .MuiButtonGroup-root .MuiButton-root {
+    flex-basis: calc(50% - 8px);
+  }
+}
+
+/* Ensure transport button is always visible */
+.MuiButtonGroup-root .MuiButton-root[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
 }

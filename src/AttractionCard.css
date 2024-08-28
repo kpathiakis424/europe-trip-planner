@@ -1,0 +1,91 @@
+.attraction-card {
+  display: flex;
+  height: 150px;
+  width: 100%;
+  background-color: #ffffff;
+  position: relative;
+  color: #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.attraction-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.attraction-card--starred {
+  background-color: #f0f0f0;
+}
+
+.attraction-card__media {
+  width: 150px;
+  object-fit: cover;
+}
+
+.attraction-card__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px;
+}
+
+.attraction-card__title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #000000;
+}
+
+.attraction-card__address {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #666666;
+}
+
+.attraction-card__types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.attraction-card__type {
+  background-color: #007bff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+}
+
+.attraction-card__actions {
+  display: flex;
+  align-items: center;
+  padding-top: 8px;
+}
+
+.attraction-card__action-button {
+  color: #007bff;
+  margin-right: 8px;
+}
+
+.attraction-card__star-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #ffc107;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.attraction-card__star-button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.attraction-card__star-button .MuiSvgIcon-root {
+  color: #ffc107;
+}   

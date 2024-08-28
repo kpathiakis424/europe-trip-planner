@@ -38,7 +38,16 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
+// Logging function
+const logApiCall = (method, url, params = {}) => {
+  console.log(`API Call: ${method} ${url}`);
+  if (Object.keys(params).length > 0) {
+    console.log('Parameters:', params);
+  }
+};
+
 app.get('/api/starred-attractions', async (req, res) => {
+  logApiCall('GET', '/api/starred-attractions', req.query);
   const { day } = req.query;
   try {
     const client = await pool.connect();
@@ -58,6 +67,7 @@ app.get('/api/starred-attractions', async (req, res) => {
 });
 
 app.post('/api/starred-attractions', async (req, res) => {
+  logApiCall('POST', '/api/starred-attractions', req.body);
   const { attractionId, day } = req.body;
   try {
     const client = await pool.connect();
@@ -71,6 +81,7 @@ app.post('/api/starred-attractions', async (req, res) => {
 });
 
 app.delete('/api/starred-attractions', async (req, res) => {
+  logApiCall('DELETE', '/api/starred-attractions', req.query);
   const { attractionId, day } = req.query;
   try {
     const client = await pool.connect();
@@ -84,6 +95,7 @@ app.delete('/api/starred-attractions', async (req, res) => {
 });
 
 app.post('/api/create-tour', async (req, res) => {
+  logApiCall('POST', '/api/create-tour', req.body);
   const { attractions, day } = req.body;
 
   const prompt = `Create an optimized one-day tour itinerary for Day ${day} with the following attractions:
@@ -136,42 +148,93 @@ app.post('/api/create-tour', async (req, res) => {
   }
 });
 
-// New endpoint for Google Directions API
 app.post('/api/directions', async (req, res) => {
-    const { origin, destination, modes } = req.body;
-    const GOOGLE_DIRECTIONS_API_URL = 'https://maps.googleapis.com/maps/api/directions/json';
-  
-    try {
-      const routePromises = modes.map(mode => 
-        axios.get(GOOGLE_DIRECTIONS_API_URL, {
-          params: {
-            origin,
-            destination,
-            mode,
-            key: config.GOOGLE_MAPS_API_KEY,
-          },
-        })
-      );
-  
-      const responses = await Promise.all(routePromises);
-      
-      const routes = responses.map((response, index) => {
-        const route = response.data.routes[0];
-        const leg = route.legs[0];
-        return {
-          mode: modes[index],
-          duration: leg.duration.value,
-          distance: leg.distance.value,
-          geometry: route.overview_polyline.points
-        };
-      });
-  
-      res.json(routes);
-    } catch (error) {
-      console.error('Error fetching directions:', error);
-      res.status(500).json({ error: 'Failed to fetch directions' });
-    }
-  });
+  logApiCall('POST', '/api/directions', req.body);
+  const { origin, destination, modes } = req.body;
+  const GOOGLE_DIRECTIONS_API_URL = 'https://maps.googleapis.com/maps/api/directions/json';
+
+  try {
+    const routePromises = modes.map(mode => {
+      const url = `${GOOGLE_DIRECTIONS_API_URL}?origin=${origin}&destination=${destination}&mode=${mode}&key=${config.GOOGLE_MAPS_API_KEY}`;
+      logApiCall('GET', url);
+      return axios.get(url);
+    });
+
+    const responses = await Promise.all(routePromises);
+    
+    const routes = responses.map((response, index) => {
+      const route = response.data.routes[0];
+      const leg = route.legs[0];
+      return {
+        mode: modes[index],
+        duration: leg.duration.value,
+        distance: leg.distance.value,
+        steps: leg.steps,
+        polyline: route.overview_polyline.points
+      };
+    });
+
+    res.json(routes);
+  } catch (error) {
+    console.error('Error fetching directions:', error);
+    res.status(500).json({ error: 'Failed to fetch directions' });
+  }
+});
+
+app.post('/api/save-tour', async (req, res) => {
+  logApiCall('POST', '/api/save-tour', req.body);
+  const { day, city, tourData } = req.body;
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      'INSERT INTO saved_tours (day, city, tour_data) VALUES ($1, $2, $3) RETURNING id',
+      [day, city, JSON.stringify(tourData)]
+    );
+    res.status(201).json({ id: result.rows[0].id, message: "Tour saved successfully" });
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving tour: " + err);
+  }
+});
+
+app.get('/api/saved-tours', async (req, res) => {
+  logApiCall('GET', '/api/saved-tours', req.query);
+  const { day } = req.query;
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      'SELECT * FROM saved_tours WHERE day = $1 ORDER BY created_at DESC',
+      [day]
+    );
+    res.json(result.rows);
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving saved tours: " + err);
+  }
+});
+
+app.get('/api/transport-options', async (req, res) => {
+  logApiCall('GET', '/api/transport-options', req.query);
+  const { origin, destination, departure_time } = req.query;
+  const API_KEY = config.GOOGLE_MAPS_API_KEY; // Using the API key from config
+
+  if (!origin || !destination || !departure_time) {
+    return res.status(400).json({ error: 'Origin, destination, and departure_time are required' });
+  }
+
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=transit&departure_time=${departure_time}&key=${API_KEY}`;
+  logApiCall('GET', url);
+
+  try {
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching transport options:', error);
+    res.status(500).json({ error: 'Failed to fetch transport options', details: error.message });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

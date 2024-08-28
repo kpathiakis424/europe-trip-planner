@@ -1,17 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
-import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import config from './config';
 import './Map.css';
+
+// Import a polyline decoding function
+import { decode } from '@mapbox/polyline';
 
 const customIcon = (number) => new L.DivIcon({
   className: 'custom-icon',
   html: `<div style="background-color: #bb86fc; color: #000000; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; font-weight: bold;">${number}</div>`,
 });
-
-const LOCAL_API_URL = 'http://localhost:3009/api/directions';
 
 const attractionIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
@@ -31,14 +30,7 @@ const hotelIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const GOOGLE_MAPS_API_KEY = config.GOOGLE_MAPS_API_KEY;
-const GOOGLE_DIRECTIONS_API_URL = 'https://maps.googleapis.com/maps/api/directions/json';
-
-const TRANSPORT_MODES = ['walking', 'driving', 'bicycling', 'transit'];
-const MAX_WALKING_DURATION = 1800; // 30 minutes
-const MAX_WALKING_DISTANCE = 2000; // 2 km
-
-function MapUpdater({ center, zoom, tour, hotel, viewType, onCloseRoute }) {
+function MapUpdater({ center, zoom, tour, hotel, viewType, onCloseRoute, directions }) {
   const map = useMap();
   const routeLayerRef = useRef(null);
 
@@ -55,84 +47,41 @@ function MapUpdater({ center, zoom, tour, hotel, viewType, onCloseRoute }) {
       routeLayerRef.current = null;
     }
 
-    const fetchRoutes = async (start, end) => {
-      try {
-        const response = await axios.post('http://localhost:3009/api/directions', {
-          origin: `${start[0]},${start[1]}`,
-          destination: `${end[0]},${end[1]}`,
-          modes: TRANSPORT_MODES
-        });
-    
-        return response.data.map(route => ({
-          ...route,
-          geometry: decodePolyline(route.geometry)
-        }));
-      } catch (error) {
-        console.error('Error fetching routes:', error);
-        throw error;
-      }
-    };
-
-    const decodePolyline = (encoded) => {
-      // ... (keep the existing decodePolyline function)
-    };
-
-    const chooseBestRoute = (routes) => {
-      // ... (keep the existing chooseBestRoute function)
-    };
-
-    const fetchAndDisplayTourRoute = async () => {
-      if (viewType === 'tour' && tour && tour.tour) {
-        const waypoints = [
-          hotel && hotel.latitude && hotel.longitude ? [hotel.latitude, hotel.longitude] : null,
-          ...tour.tour.filter(stop => stop && stop.latitude && stop.longitude).map(stop => [stop.latitude, stop.longitude]),
-          hotel && hotel.latitude && hotel.longitude ? [hotel.latitude, hotel.longitude] : null
-        ].filter(Boolean);
-
-        let fullTourRoute = [];
-        for (let i = 0; i < waypoints.length - 1; i++) {
-          const routes = await fetchRoutes(waypoints[i], waypoints[i + 1]);
-          const bestRoute = chooseBestRoute(routes);
-          fullTourRoute = [...fullTourRoute, ...bestRoute.geometry];
+    if (viewType === 'tour' && tour && tour.tour && directions && directions.length > 0) {
+      const routePoints = directions.flatMap(directionSet => {
+        if (directionSet && directionSet.length > 0) {
+          const bestRoute = chooseBestRoute(directionSet);
+          if (bestRoute && bestRoute.polyline) {
+            return decode(bestRoute.polyline);
+          }
         }
+        return [];
+      }).filter(point => point.length === 2);
 
-        const routeLatLngs = fullTourRoute;
-        routeLayerRef.current = L.polyline(routeLatLngs, { color: '#bb86fc' }).addTo(map);
+      if (routePoints.length > 0) {
+        routeLayerRef.current = L.polyline(routePoints, { color: '#bb86fc' }).addTo(map);
         map.fitBounds(routeLayerRef.current.getBounds());
 
         // Add close button
-        const closeButton = L.control({ position: 'topright' });
-        closeButton.onAdd = () => {
-          const div = L.DomUtil.create('div', 'close-button');
-          div.innerHTML = '✕';
-          div.style.fontSize = '20px';
-          div.style.fontWeight = 'bold';
-          div.style.cursor = 'pointer';
-          div.onclick = onCloseRoute;
-          return div;
-        };
-        closeButton.addTo(map);
+       
       }
-    };
-
-    fetchAndDisplayTourRoute();
-
-  }, [tour, hotel, viewType, map, onCloseRoute]);
+    }
+  }, [tour, hotel, viewType, map, onCloseRoute, directions]);
 
   return null;
 }
 
-const fetchRoutes = async (start, end) => {
-  try {
-    const response = await axios.post(LOCAL_API_URL, {
-      origin: `${start[0]},${start[1]}`,
-      destination: `${end[0]},${end[1]}`,
-      modes: TRANSPORT_MODES
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching routes:', error);
-    throw error;
+const chooseBestRoute = (routes) => {
+  const walkingRoute = routes.find(r => r.mode === 'walking');
+  const transitRoute = routes.find(r => r.mode === 'transit');
+  const drivingRoute = routes.find(r => r.mode === 'driving');
+
+  if (walkingRoute && walkingRoute.duration < 1800) { // Less than 30 minutes
+    return walkingRoute;
+  } else if (transitRoute) {
+    return transitRoute;
+  } else {
+    return drivingRoute || walkingRoute || transitRoute;
   }
 };
 
@@ -146,7 +95,9 @@ const Map = ({
   mapMarkers,
   viewType,
   tour,
-  hotel 
+  hotel,
+  selectedRoute,
+  directions
 }) => {
   const currentDayData = tripData && tripData[activeDay];
   const currentCityData = currentDayData && currentDayData.cities && currentDayData.cities[activeCity];
@@ -167,8 +118,8 @@ const Map = ({
     <div className="map-container glass-effect">
       <MapContainer center={center} zoom={zoom} style={{ height: '100%', width: '100%' }}>
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <MapUpdater 
           center={center} 
@@ -177,6 +128,7 @@ const Map = ({
           hotel={hotel}
           viewType={viewType}
           onCloseRoute={onCloseRoute}
+          directions={directions}
         />
         
         {selectedAttraction && selectedAttraction.latitude && selectedAttraction.longitude && viewType !== 'tour' && (
@@ -214,6 +166,20 @@ const Map = ({
             </Marker>
           )
         ))}
+
+        {walkingRoute && (
+          <Polyline 
+            positions={[walkingRoute.start, walkingRoute.end]}
+            color="#bb86fc"
+          />
+        )}
+
+        {selectedRoute && (
+          <Polyline
+            positions={decode(selectedRoute)}
+            color="#bb86fc"
+          />
+        )}
       </MapContainer>
     </div>
   );

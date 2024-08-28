@@ -1,31 +1,81 @@
 /* Map.css */
 .map-container {
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.map-container:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
 .mapboxgl-ctrl-bottom-left,
 .mapboxgl-ctrl-bottom-right,
 .mapboxgl-ctrl-top-left,
 .mapboxgl-ctrl-top-right {
-  filter: invert(1) hue-rotate(180deg);
+  filter: none;
 }
 
 .mapboxgl-popup-content {
-  background-color: #121212;
-  color: #ffffff;
-  border-radius: 5px;
+  background-color: var(--surface-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .mapboxgl-popup-tip {
-  border-top-color: #121212 !important;
+  border-top-color: var(--surface-color) !important;
 }
 
 /* Glass mode effect for popups */
 .mapboxgl-popup-content.glass-effect {
-  background: rgba(18, 18, 18, 0.7);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Custom styles for map elements */
+.mapboxgl-ctrl-attrib {
+  background-color: var(--background-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+.mapboxgl-ctrl-attrib a {
+  color: var(--primary-color) !important;
+}
+
+.mapboxgl-ctrl button {
+  background-color: var(--surface-color) !important;
+}
+
+.mapboxgl-ctrl button .mapboxgl-ctrl-icon {
+  filter: none !important;
+}
+
+.mapboxgl-ctrl-group {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: 1px solid var(--text-hint);
+}
+
+/* Custom marker styles */
+.map-marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.map-marker:hover {
+  transform: scale(1.1);
 }
