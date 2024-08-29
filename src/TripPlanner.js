@@ -7,7 +7,9 @@ import tripData from './tripData';
 import attractionsData from './attractionsData';
 import './TripPlanner.css';
 
-const API_URL = 'http://localhost:3009/api';
+const API_URL = process.env.NODE_ENV === 'production'
+  ? 'http://kevin.home:3009/api'
+  : 'http://localhost:3009/api';
 
 const TripPlanner = () => {
   const [activeDay, setActiveDay] = useState(0);
@@ -81,7 +83,7 @@ const TripPlanner = () => {
         params: {
           origin,
           destination,
-          departure_time: 1725871200 // 11am CET on 9/9/2024
+          departure_time: 1725871200
         }
       });
 
@@ -318,7 +320,6 @@ const TripPlanner = () => {
           setIsTourCreated(true);
           setIsTourSaved(true);
 
-          // If it's day 3 and the city is Brussels, or day 5 and the city is Paris, fetch transport data
           if ((activeDay === 2 && currentCityData.name === 'Brussels') || 
               (activeDay === 4 && currentCityData.name === 'Paris')) {
             fetchTransportData(activeDay === 2 ? 'Amsterdam' : 'Brussels', currentCityData.name);
@@ -354,7 +355,7 @@ const TripPlanner = () => {
         />
       </div>
       <div className="trip-planner__content">
-        <div className="trip-planner__detail-view glass-effect">
+        <div className="trip-planner__detail-view">
           {currentCityData && (
             <DetailView
               data={currentCityData[activeDetail === 'tour' ? 'activities' : activeDetail]}

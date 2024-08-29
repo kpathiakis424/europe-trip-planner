@@ -1,27 +1,22 @@
 import React from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
-import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter as Router } from 'react-router-dom';
 import TripPlanner from './TripPlanner';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 
 const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#ff9800',
-    },
-    secondary: {
-      main: '#4caf50',
-    },
-    background: {
+    palette: {
+      mode: 'light',
+      primary: {
+        main: '#ff9800',
+      },
+      secondary: {
+        main: '#4caf50',
+      },
+      background: {
       default: '#f5f5f5',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#000000',
-      secondary: '#757575',
     },
   },
   typography: {
@@ -64,18 +59,14 @@ const theme = createTheme({
 
 function App() {
   return (
-    <StyledEngineProvider injectFirst>
-      <MuiThemeProvider theme={theme}>
-        <EmotionThemeProvider theme={theme}>
-          <CssBaseline />
-          <div className="App">
-            <div className="glass-container">
-              <TripPlanner />
-            </div>
-          </div>
-        </EmotionThemeProvider>
-      </MuiThemeProvider>
-    </StyledEngineProvider>
+    <Router basename="/eurotrip">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div className="App">
+          <TripPlanner />
+        </div>
+      </ThemeProvider>
+    </Router>
   );
 }
 

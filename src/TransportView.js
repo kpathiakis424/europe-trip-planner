@@ -1,17 +1,14 @@
 import React from 'react';
-import { 
-  Box, Typography, Card, CardContent, Button
-} from '@mui/material';
+import {   Typography, Card, CardContent, Button} from '@mui/material';
+import { Train as TrainIcon, DirectionsWalk as WalkIcon } from '@mui/icons-material';
 import {
   Timeline, TimelineItem, TimelineSeparator, TimelineConnector,
   TimelineContent, TimelineDot, TimelineOppositeContent
 } from '@mui/lab';
-import { Train as TrainIcon, DirectionsWalk as WalkIcon } from '@mui/icons-material';
-import './TransportView.css';
 
-const TransportView = ({ day, onRouteSelect, selectedRoute, selectedRouteSteps, transportData }) => {
+const TransportView = ({ transportData, selectedTransportRoute, setSelectedTransportRoute }) => {
   if (!transportData || !transportData.options || transportData.options.length === 0) {
-    return <Typography>No transport options available for this day.</Typography>;
+    return null;
   }
 
   const getIcon = (mode) => {
@@ -26,15 +23,15 @@ const TransportView = ({ day, onRouteSelect, selectedRoute, selectedRouteSteps, 
   };
 
   return (
-    <Box className="transport-view">
-      <Typography variant="h6" gutterBottom>Transport Options for Day {day}</Typography>
-      {transportData.options.map((option, index) => (
-        <Card key={index} className="transport-route">
-          <CardContent>
+    <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>Transport to {transportData.destination}</Typography>
+        {transportData.options.map((option, index) => (
+          <div key={index} className="transport-route">
             <div className="transport-route__header">
               <Typography variant="subtitle1">
                 <TrainIcon sx={{ mr: 1 }} />
-                {option.type || 'Train'} - {option.duration && option.duration.text}
+                {option.type || 'Train'} - {option.duration}
               </Typography>
               <Typography variant="body2">
                 Depart: {option.startTime} - Arrive: {option.endTime}
@@ -42,14 +39,14 @@ const TransportView = ({ day, onRouteSelect, selectedRoute, selectedRouteSteps, 
             </div>
             <Button 
               variant="contained" 
-              onClick={() => onRouteSelect(option.route, option.steps)}
+              onClick={() => setSelectedTransportRoute(option)}
               className="MuiButton-root"
             >
-              View Route
+              {selectedTransportRoute === option ? 'Hide Route' : 'View Route'}
             </Button>
-            {selectedRoute === option.route && (
+            {selectedTransportRoute === option && (
               <Timeline position="right" className="transport-route__steps">
-                {selectedRouteSteps && selectedRouteSteps.map((step, stepIndex) => (
+                {option.steps && option.steps.map((step, stepIndex) => (
                   <TimelineItem key={stepIndex}>
                     <TimelineOppositeContent className="transport-step__time">
                       <Typography variant="body2">
@@ -60,7 +57,7 @@ const TransportView = ({ day, onRouteSelect, selectedRoute, selectedRouteSteps, 
                       <TimelineDot color="primary" className="transport-step__icon">
                         {getIcon(step.travel_mode)}
                       </TimelineDot>
-                      {stepIndex < selectedRouteSteps.length - 1 && <TimelineConnector />}
+                      {stepIndex < option.steps.length - 1 && <TimelineConnector />}
                     </TimelineSeparator>
                     <TimelineContent className="transport-step__details">
                       <Typography variant="h6">
@@ -83,10 +80,10 @@ const TransportView = ({ day, onRouteSelect, selectedRoute, selectedRouteSteps, 
                 ))}
               </Timeline>
             )}
-          </CardContent>
-        </Card>
-      ))}
-    </Box>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 };
 

@@ -164,7 +164,7 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
     );
   };
 
-  const renderTransportView = () => {
+  const renderTransportCard = () => {
     if (!transportData || !transportData.options || transportData.options.length === 0) {
       return null;
     }
@@ -242,9 +242,7 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
         Tour for Day {tour.day}
       </Typography>
 
-      {/* Transport View */}
-      {transportData && renderTransportView()}
-
+      {/* Summary Card */}
       <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
         <CardContent>
           <Grid container justifyContent="space-between" alignItems="center">
@@ -271,9 +269,39 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
         </CardContent>
       </Card>
 
+      {/* Tips Card */}
+      <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
+        <CardContent>
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="h6">Tips</Typography>
+            </Grid>
+            <Grid item>
+              <IconButton onClick={() => setIsTipsExpanded(!isTipsExpanded)}>
+                {isTipsExpanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
+            </Grid>
+          </Grid>
+          <Collapse in={isTipsExpanded} timeout="auto" unmountOnExit>
+            <TextField
+              multiline
+              rows={4}
+              value={tips}
+              onChange={(e) => onTipsChange(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ mt: 2 }}
+            />
+          </Collapse>
+        </CardContent>
+      </Card>
+
       <Typography variant="h6" gutterBottom>
         Itinerary:
       </Typography>
+
+      {/* Transport Card (if available) */}
+      {transportData && renderTransportCard()}
 
       {/* Start: Hotel */}
       <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
@@ -294,6 +322,7 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
         </CardContent>
       </Card>
 
+      {/* Attractions and Routes */}
       {tour.tour.map((item, index) => (
         <React.Fragment key={item.id}>
           <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
@@ -338,32 +367,6 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
               </Typography>
             </Grid>
           </Grid>
-        </CardContent>
-      </Card>
-
-      <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
-        <CardContent>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="h6">Tips</Typography>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={() => setIsTipsExpanded(!isTipsExpanded)}>
-                {isTipsExpanded ? <ExpandLess /> : <ExpandMore />}
-              </IconButton>
-            </Grid>
-          </Grid>
-          <Collapse in={isTipsExpanded} timeout="auto" unmountOnExit>
-            <TextField
-              multiline
-              rows={4}
-              value={tips}
-              onChange={(e) => onTipsChange(e.target.value)}
-              fullWidth
-              variant="outlined"
-              sx={{ mt: 2 }}
-            />
-          </Collapse>
         </CardContent>
       </Card>
 

@@ -14,7 +14,5 @@ module.exports = {
   open_route: {
     key: '5b3ce3597851110001cf624897ac8ee980e2454e96cf0eaba4321e1e'
   },
-  server: {
-    apiport: 3001
-  }
+
 };

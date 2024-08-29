@@ -142,7 +142,7 @@ const DetailView = ({
                 />
               </>
             ) : (
-              <Typography variant="body1">No tour available for this day. Create a tour from the Activities view.</Typography>
+              <Typography variant="body1">No guide available for this day. Create one from the Activities view.</Typography>
             )}
           </>
         );

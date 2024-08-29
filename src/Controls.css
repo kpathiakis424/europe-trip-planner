@@ -13,51 +13,47 @@
   box-sizing: border-box;
 }
 
-/* Day stepper */
-.day-stepper {
+/* Day selector */
+.day-selector {
   width: 100%;
   margin-bottom: 1rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-.MuiTabs-root {
-  min-height: 48px;
-}
-
-.MuiTab-root {
-  min-height: 48px;
-  font-weight: 500;
-  text-transform: none;
+.MuiSelect-select {
+  padding: 0.75rem;
 }
 
 /* City selector */
 .city-selector {
   margin-bottom: 1rem;
   background-color: rgba(233, 236, 239, 0.8);
-  margin-top: 10px;  
+  margin-top: 10px;
   border-radius: 0.75rem;
   overflow: hidden;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
-.MuiToggleButton-root {
-  color: #495057;
+.city-selector .MuiButton-root {
+  flex-grow: 1;
+  border-radius: 0;
   font-weight: 500;
   padding: 0.75rem 1rem;
-  border: none;
   transition: all 0.3s ease;
-  flex-grow: 1;
-  min-width: 5rem;
-  border-radius: 0.5rem;
+  text-transform: none;
 }
 
-.MuiToggleButton-root.Mui-selected {
+.city-selector .MuiButton-contained {
   background-color: #ff9800;
   color: white;
   box-shadow: 0 0.2rem 0.5rem rgba(255, 152, 0, 0.4);
+}
+
+.city-selector .MuiButton-outlined {
+  color: #495057;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 /* Detail selector */
@@ -109,13 +105,12 @@
     padding: 0.75rem;
   }
 
-  .MuiTab-root {
-    font-size: 0.75rem;
-    min-width: auto;
-    padding: 6px 12px;
+  .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 0.5rem;
   }
 
-  .MuiToggleButton-root,
+  .city-selector .MuiButton-root,
   .MuiButtonGroup-root .MuiButton-root {
     padding: 0.5rem;
     font-size: 0.75rem;
@@ -128,8 +123,9 @@
     width: 100%;
   }
 
-  .MuiToggleButton-root {
-    flex-basis: calc(50% - 8px);
+  .city-selector .MuiButton-root {
+    flex-basis: calc(50% - 4px);
+    margin: 2px;
   }
 
   .MuiButtonGroup-root .MuiButton-root {

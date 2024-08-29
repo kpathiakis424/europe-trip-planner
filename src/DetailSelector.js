@@ -1,73 +1,44 @@
 import React from 'react';
-import { ButtonGroup, Button, Badge } from '@mui/material';
 import HotelIcon from '@mui/icons-material/Hotel';
-import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import TourIcon from '@mui/icons-material/Tour';
+import './DetailSelector.css';
+import './DetailSelectorBadge.css';
 
 const DetailSelector = ({
   activeDetail,
   setActiveDetail,
-  isTransportAvailable,
-  toursCount,
-  activeDay,
   handleTourButtonClick,
-  isTourAvailable
+  toursCount,
 }) => {
-  const buttonStyle = {
-    fontSize: '0.75rem',
-    padding: '6px 8px',
-  };
-
   return (
-    <ButtonGroup variant="contained" className="detail-selector" size="small">
-      <Button 
-        onClick={() => setActiveDetail('hotel')}
-        color={activeDetail === 'hotel' ? 'primary' : 'secondary'}
-        startIcon={<HotelIcon />}
-        style={buttonStyle}
-      >
-        Hotel
-      </Button>
-      <Button 
-        onClick={() => setActiveDetail('transport')}
-        color={activeDetail === 'transport' ? 'primary' : 'secondary'}
-        startIcon={<DirectionsBusIcon />}
-        disabled={!isTransportAvailable}
-        style={buttonStyle}
-      >
-        Transport
-      </Button>
-      <Button 
-        onClick={() => setActiveDetail('activities')}
-        color={activeDetail === 'activities' ? 'primary' : 'secondary'}
-        startIcon={<LocalActivityIcon />}
-        style={buttonStyle}
-      >
-        Activities
-      </Button>
-      {isTourAvailable ? (
-        <Badge badgeContent={toursCount[activeDay] || 0} color="primary">
-          <Button 
-            onClick={handleTourButtonClick}
-            color={activeDetail === 'tour' ? 'primary' : 'secondary'}
-            startIcon={<TourIcon />}
-            style={buttonStyle}
-          >
-            Tour
-          </Button>
-        </Badge>
-      ) : (
-        <Button 
-          onClick={() => setActiveDetail('tour')}
-          color={activeDetail === 'tour' ? 'primary' : 'secondary'}
-          startIcon={<TourIcon />}
-          style={buttonStyle}
+    <div className="detail-selector-container">
+      <div className="detail-selector">
+        <button
+          onClick={() => setActiveDetail('hotel')}
+          className={activeDetail === 'hotel' ? 'active' : ''}
         >
-          Tour
-        </Button>
-      )}
-    </ButtonGroup>
+          <HotelIcon /> Hotel
+        </button>
+        <button
+          onClick={() => setActiveDetail('activities')}
+          className={activeDetail === 'activities' ? 'active' : ''}
+        >
+          <LocalActivityIcon /> Activities
+        </button>
+        <button
+          onClick={handleTourButtonClick}
+          className={`${activeDetail === 'tour' ? 'active' : ''} tour-button`}
+        >
+          <TourIcon /> Guide
+          {toursCount > 0 && (
+            <span className="tour-badge">
+              <span className="tour-badge-content">{toursCount}</span>
+            </span>
+          )}
+        </button>
+      </div>
+    </div>
   );
 };
 

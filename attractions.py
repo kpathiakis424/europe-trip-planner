@@ -47,7 +47,8 @@ def process_data(input_file: str, output_file: str):
                     "description": row['Description'],
                     "approxPrice": price,
                     "timeAllotted": time_allotted,
-                    "types": types
+                    "types": types,
+                     "image": row['Image']  # Assuming 'Images' is the column name in CSV
                 }
                 attractions[main_city].append(attraction)
                 id_counter += 1

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Tabs, Tab, ToggleButtonGroup, ToggleButton, Menu, MenuItem } from '@mui/material';
+import { Box, Select, MenuItem, ButtonGroup, Button, Menu, FormControl, InputLabel } from '@mui/material';
 import DetailSelector from './DetailSelector';
 
 function Controls({ 
@@ -17,16 +17,17 @@ function Controls({
   onSaveTour,
   onSelectTour,
   isTransportAvailable,
-  onHotelChange,
-  onTransportChange,
-  onActivityChange,
   isTourAvailable
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleDayChange = (_, newValue) => {
-    console.log('Day changed in Controls:', newValue);
-    setActiveDay(newValue);
+  const handleDayChange = (event) => {
+    console.log('Day changed in Controls:', event.target.value);
+    setActiveDay(event.target.value);
+  };
+
+  const handleCityChange = (index) => {
+    setActiveCity(index);
   };
 
   const handleClick = (event) => {
@@ -51,46 +52,44 @@ function Controls({
 
   return (
     <Box className="controls glass-effect">
-      <Tabs
-        value={activeDay}
-        onChange={handleDayChange}
-        indicatorColor="secondary"
-        textColor="secondary"
-        variant="scrollable"
-        scrollButtons="auto"
-        className="day-stepper"
-      >
-        {tripData.map((_, index) => (
-          <Tab key={index} label={`Day ${index + 1}`} />
-        ))}
-      </Tabs>
+      <FormControl fullWidth variant="outlined" className="day-selector">
+        <InputLabel id="day-select-label">Day</InputLabel>
+        <Select
+          labelId="day-select-label"
+          id="day-select"
+          value={activeDay}
+          onChange={handleDayChange}
+          label="Day"
+        >
+          {tripData.map((_, index) => (
+            <MenuItem key={index} value={index}>{`Day ${index + 1}`}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-      <ToggleButtonGroup
-        value={activeCity}
-        exclusive
-        onChange={(_, newValue) => newValue !== null && setActiveCity(newValue)}
+      <ButtonGroup
+        variant="contained"
         aria-label="city selector"
         className="city-selector"
+        fullWidth
       >
         {tripData[activeDay].cities.map((city, index) => (
-          <ToggleButton 
-            key={city.name} 
-            value={index}
+          <Button
+            key={city.name}
+            onClick={() => handleCityChange(index)}
+            variant={activeCity === index ? 'contained' : 'outlined'}
           >
             {city.name}
-          </ToggleButton>
+          </Button>
         ))}
-      </ToggleButtonGroup>
+      </ButtonGroup>
 
       <DetailSelector
-        activeDetail={activeDetail}
-        setActiveDetail={setActiveDetail}
-        isTransportAvailable={isTransportAvailable}
-        toursCount={toursCount}
-        activeDay={activeDay}
-        handleTourButtonClick={handleTourButtonClick}
-        isTourAvailable={isTourAvailable}
-      />
+  activeDetail={activeDetail}
+  setActiveDetail={setActiveDetail}
+  handleTourButtonClick={handleTourButtonClick}
+  toursCount={toursCount[activeDay] || 0}
+/>
 
       <Menu
         anchorEl={anchorEl}
@@ -124,9 +123,6 @@ Controls.propTypes = {
   onSaveTour: PropTypes.func.isRequired,
   onSelectTour: PropTypes.func.isRequired,
   isTransportAvailable: PropTypes.bool.isRequired,
-  onHotelChange: PropTypes.func.isRequired,
-  onTransportChange: PropTypes.func.isRequired,
-  onActivityChange: PropTypes.func.isRequired,
   isTourAvailable: PropTypes.bool.isRequired,
 };
 

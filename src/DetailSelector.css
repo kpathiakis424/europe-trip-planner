@@ -1,0 +1,115 @@
+/* DetailSelector.css */
+.detail-selector-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.detail-selector {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.detail-selector button {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.detail-selector button:focus {
+  outline: none;
+}
+
+.detail-selector button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background-color: #FF9800;
+  transition: width 0.3s ease;
+}
+
+.detail-selector button:hover::before,
+.detail-selector button.active::before {
+  width: 100%;
+}
+
+.detail-selector button.active {
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-selector button:hover {
+  color: #FF9800;
+}
+
+.detail-selector button .MuiSvgIcon-root {
+  font-size: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* Animation for button click */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+.detail-selector button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 152, 0, 0.3);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.detail-selector button:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .detail-selector {
+    max-width: 100%;
+  }
+
+  .detail-selector button {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .detail-selector button .MuiSvgIcon-root {
+    font-size: 16px;
+  }
+}
