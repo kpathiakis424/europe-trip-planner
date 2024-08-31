@@ -59,7 +59,7 @@ const theme = createTheme({
 
 function App() {
   return (
-    <Router basename="/eurotrip">
+    <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="App">

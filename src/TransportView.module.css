@@ -1,0 +1,168 @@
+/* TransportView.module.css */
+
+.transportView {
+  --primary-font: 'Roboto', sans-serif;
+  --title-color: #333333;
+  --time-color: #555555;
+  --details-color: #777777;
+
+  font-family: var(--primary-font);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  margin-bottom: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.cardContent {
+  padding-top: 10px !important;
+  padding-left: 10px !important;
+  padding-bottom: 10px !important;
+  padding-right: 2px !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.info {
+  display: flex;
+  align-items: flex-start;
+  flex-grow: 1;
+  width: calc(100% - 40px); /* Adjusted to accommodate the expand button */
+  min-width: 0; /* Allow content to shrink */
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.icon svg {
+  font-size: 28px;
+  color: #939393;
+}
+
+.details {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  color: var(--title-color);
+  line-height: 1.2;
+}
+
+.time {
+  font-size: 1rem;
+  color: var(--time-color);
+  margin-bottom: 2px;
+  word-wrap: break-word;
+  line-height: 1.2;
+}
+
+.routeDetails {
+  font-size: 0.9rem;
+  color: var(--details-color);
+  word-wrap: break-word;
+  line-height: 1.2;
+}
+
+.chipsWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: nowrap;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.chip {
+  background-color: var(--chip-bg-color);
+  color: var(--chip-text-color);
+  padding: 2px 6px;
+  border-radius: 16px;
+  font-size: 12px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.expandButtonWrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  margin-left: 4px;
+}
+
+.expandButton {
+  padding: 4px;
+}
+
+.transferText {
+  margin-top: 6px;
+  color: #666;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .transportView {
+    padding: 2px;
+    background-color: #f0f0f0;
+  }
+
+  .header {
+    flex-direction: row; /* Keep header as row */
+    align-items: flex-start;
+  }
+
+  .info {
+    width: calc(100% - 40 px); /* Adjust width to accommodate expand button */
+  }
+
+  .chipsWrapper {
+    width: 100%;
+  }
+
+  .chips {
+    max-width: 100%;
+  }
+
+  .expandButtonWrapper {
+    margin-left: 4px; /* Reduce left margin on mobile */
+  }
+
+  .expandButton {
+    padding: 2px; /* Reduce padding on mobile */
+  }
+}

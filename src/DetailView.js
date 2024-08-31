@@ -1,10 +1,9 @@
 import React from 'react';
-import { Box, Typography, Grid, Button } from '@mui/material';
-import { AddCircle as AddCircleIcon, Save as SaveIcon } from '@mui/icons-material';
+import { Box, Typography, Grid, Button, Card, CardContent } from '@mui/material';
+import { AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import AttractionCard from './AttractionCard';
 import TourDisplay from './TourDisplay';
-import TransportView from './TransportView';
 import './DetailView.css';
 
 const DetailView = ({ 
@@ -18,24 +17,29 @@ const DetailView = ({
   mapMarkers, 
   onCreateTour, 
   onSaveTour,
-  isTourSaved,
+  isTourSaving,
   tour, 
   hotel,
   activeDay,
   transportData,
-  onRouteSelect,
+  isTourCreating,
+  isTourSaved,
+  attractionsData,
+  setSelectedTransportRoute,
   selectedRoute,
   selectedRouteSteps,
   onSummaryChange,
   onTipsChange,
   summary,
   tips,
-  directions
+  directions,
+  isTourCreated,
+  onDeleteTour
 }) => {
   if (!data && type !== 'transport' && type !== 'tour') return null;
 
   const handleCreateTour = () => {
-    const starredAttractionObjects = data.filter(attraction => 
+    const starredAttractionObjects = attractionsData.filter(attraction => 
       starredAttractions.includes(attraction.id)
     );
     if (starredAttractionObjects.length > 0) {
@@ -60,9 +64,9 @@ const DetailView = ({
                 startIcon={<AddCircleIcon />}
                 onClick={handleCreateTour}
                 className="detail-view__button"
-                disabled={starredAttractions.length === 0}
+                disabled={starredAttractions.length === 0 || isTourCreated || isTourCreating}
               >
-                Create Tour
+                {isTourCreating ? 'Creating Tour...' : 'Create Tour'}
               </Button>
             </Box>
             <Grid container spacing={2}>
@@ -103,48 +107,73 @@ const DetailView = ({
       case 'tour':
         return (
           <>
-            {transportData && (
-              <TransportView
-                day={activeDay}
-                onRouteSelect={onRouteSelect}
+            <Box className="detail-view__header">
+              <Typography variant="h4" gutterBottom className="detail-view__title">
+                Tour for Day {activeDay} in {cityName}
+              </Typography>
+              {isTourCreated && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<DeleteIcon />}
+                  onClick={onDeleteTour}
+                  className="detail-view__button"
+                >
+                  Delete Tour
+                </Button>
+              )}
+            </Box>
+            {tour ? (
+              <TourDisplay
+                tour={tour}
+                hotel={hotel}
+                summary={summary}
+                tips={tips}
+                onSummaryChange={onSummaryChange}
+                onTipsChange={onTipsChange}
+                onSaveTour={onSaveTour}
+                isSaving={isTourSaving}
+                directions={directions}
+                transportData={transportData}
+                setSelectedTransportRoute={setSelectedTransportRoute}
                 selectedRoute={selectedRoute}
                 selectedRouteSteps={selectedRouteSteps}
-                transportData={transportData}
               />
-            )}
-            {tour ? (
-              <>
-                <Box className="detail-view__header">
-                  <Typography variant="h4" gutterBottom className="detail-view__title">
-                    Tour for Day {activeDay} in {cityName}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<SaveIcon />}
-                    onClick={onSaveTour}
-                    disabled={isTourSaved}
-                    className="detail-view__button"
-                  >
-                    {isTourSaved ? 'Tour Saved' : 'Save Tour'}
-                  </Button>
-                </Box>
-                <TourDisplay 
-                  tour={tour} 
-                  hotel={hotel}
-                  summary={summary}
-                  tips={tips}
-                  onSummaryChange={onSummaryChange}
-                  onTipsChange={onTipsChange}
-                  onSaveTour={onSaveTour}
-                  isSaving={isTourSaved}
-                  directions={directions}
-                />
-              </>
             ) : (
-              <Typography variant="body1">No guide available for this day. Create one from the Activities view.</Typography>
+              <Typography variant="body1">No tour created yet. Please create a tour from the Activities tab.</Typography>
             )}
           </>
+        );
+      case 'transport':
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom className="detail-view__title">
+              Transport Options for Day {activeDay}
+            </Typography>
+            {transportData ? (
+              <Card>
+                <CardContent>
+                  <Typography variant="h5">
+                    {transportData.origin} to {transportData.destination}
+                  </Typography>
+                  {/* Render transport options here */}
+                  {transportData.options && transportData.options.map((option, index) => (
+                    <Box key={index} className="transport-option">
+                      <Typography variant="h6">{option.type}</Typography>
+                      <Typography>Duration: {option.duration}</Typography>
+                      <Typography>Depart: {option.startTime}</Typography>
+                      <Typography>Arrive: {option.endTime}</Typography>
+                      <Button onClick={() => setSelectedTransportRoute(option)}>
+                        View Details
+                      </Button>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : (
+              <Typography variant="body1">No transport information available for this day.</Typography>
+            )}
+          </Box>
         );
       default:
         return <Typography variant="body1" className="no-data">No data available for this view.</Typography>;

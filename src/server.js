@@ -48,7 +48,8 @@ const generationConfig = {
 };
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'build')));
+const buildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(buildPath));
 
 // API Routes
 app.get('/api/starred-attractions', async (req, res) => {
@@ -97,9 +98,9 @@ app.delete('/api/starred-attractions', async (req, res) => {
 });
 
 app.post('/api/create-tour', async (req, res) => {
-  const { attractions, day } = req.body;
+  const { attractions, day, city } = req.body;
 
-  const prompt = `Create an optimized one-day tour itinerary for Day ${day} with the following attractions:
+  const prompt = `Create an optimized one-day tour itinerary for Day ${day} in ${city} with the following attractions:
   ${attractions.map((a, index) => `${index + 1}. ${a.name} (ID: ${a.id})`).join('\n')}
 
   Requirements:
@@ -107,11 +108,12 @@ app.post('/api/create-tour', async (req, res) => {
   2. Suggest a reasonable amount of time to spend at each attraction.
   3. Include a summary of the tour.
   4. Provide tips for the tour.
-  5. Include the day number in the response.
+  5. Include the day number and city name in the response.
 
   Please format the response as a JSON object with this structure:
   {
     "day": ${day},
+    "city": "${city}",
     "tour": [
       {
         "id": "attraction_id",
@@ -203,7 +205,7 @@ app.post('/api/save-tour', async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      'INSERT INTO saved_tours (day, city, tour_data) VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO saved_tours (day, city, tour_data) VALUES ($1, $2, $3) ON CONFLICT (day, city) DO UPDATE SET tour_data = $3 RETURNING id',
       [day, city, JSON.stringify(tourData)]
     );
     res.status(201).json({ id: result.rows[0].id, message: "Tour saved successfully" });
@@ -215,12 +217,12 @@ app.post('/api/save-tour', async (req, res) => {
 });
 
 app.get('/api/saved-tours', async (req, res) => {
-  const { day } = req.query;
+  const { day, city } = req.query;
   try {
     const client = await pool.connect();
     const result = await client.query(
-      'SELECT * FROM saved_tours WHERE day = $1 ORDER BY created_at DESC',
-      [day]
+      'SELECT * FROM saved_tours WHERE day = $1 AND city = $2 ORDER BY created_at DESC',
+      [day, city]
     );
     res.json(result.rows);
     client.release();
@@ -249,13 +251,46 @@ app.get('/api/transport-options', async (req, res) => {
   }
 });
 
+app.get('/api/newest-tour', async (req, res) => {
+  const { day, city } = req.query;
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      'SELECT * FROM saved_tours WHERE day = $1 AND city = $2 ORDER BY created_at DESC LIMIT 1',
+      [day, city]
+    );
+    res.json(result.rows[0] || null);
+    client.release();
+  } catch (err) {
+    console.error('Error fetching newest tour:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
+});
+
+app.delete('/api/delete-tour', async (req, res) => {
+  const { day, city } = req.query;
+  try {
+    const client = await pool.connect();
+    await client.query('DELETE FROM saved_tours WHERE day = $1 AND city = $2', [day, city]);
+    res.status(200).send("Tour deleted successfully");
+    client.release();
+  } catch (err) {
+    console.error('Error deleting tour:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
+});
+
 // The "catch all" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(buildPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  console.log(`Serving static files from: ${path.join(__dirname, 'build')}`);
+  console.log(`Serving static files from: ${buildPath}`);
 });

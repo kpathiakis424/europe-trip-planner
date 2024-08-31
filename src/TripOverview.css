@@ -1,0 +1,97 @@
+.trip-overview {
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.trip-overview:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+.overview-section {
+  margin-bottom: 30px;
+}
+
+.overview-card {
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.overview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.overview-card .MuiCardContent-root {
+  padding: 20px;
+}
+
+.overview-card .MuiTypography-h5 {
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
+
+.overview-card .MuiIconButton-root {
+  transition: transform 0.3s ease;
+}
+
+.overview-card .MuiIconButton-root.Mui-expanded {
+  transform: rotate(180deg);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.trip-overview > * {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.trip-overview > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.trip-overview > *:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.MuiLinearProgress-root {
+  height: 10px !important;
+  border-radius: 5px !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.MuiLinearProgress-bar {
+  background-color: #4caf50 !important;
+}
+
+ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .trip-overview {
+    padding: 15px;
+  }
+
+  .overview-card .MuiCardContent-root {
+    padding: 15px;
+  }
+
+  .overview-card .MuiTypography-h5 {
+    font-size: 1.2rem;
+  }
+}

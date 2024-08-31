@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Controls from './Controls';
 import DetailView from './DetailView';
+import TripOverview from './TripOverview';
 import Map from './Map';
 import tripData from './tripData';
 import attractionsData from './attractionsData';
 import './TripPlanner.css';
 
 const API_URL = process.env.NODE_ENV === 'production'
-  ? 'http://kevin.home:3009/api'
+  ? 'https://eurotrip.pathiakis.com/api'
   : 'http://localhost:3009/api';
 
 const TripPlanner = () => {
@@ -30,42 +31,43 @@ const TripPlanner = () => {
   const [isTourSaved, setIsTourSaved] = useState(false);
   const [summary, setSummary] = useState('');
   const [tips, setTips] = useState('');
-  const [tours, setTours] = useState({});
   const [isTourCreated, setIsTourCreated] = useState(false);
-  const [toursCount, setToursCount] = useState({});
   const [directions, setDirections] = useState(null);
+  const [isCreatingTour, setIsCreatingTour] = useState(false);
 
   useEffect(() => {
     fetchStarredAttractions(activeDay);
-    fetchSavedTours(activeDay);
   }, [activeDay]);
 
   useEffect(() => {
-    const dayData = tripData[activeDay];
-    const cityData = dayData.cities[activeCity];
-    const cityName = cityData.name;
+    if (activeDay !== 'overview') {
+      const dayData = tripData[activeDay];
+      const cityData = dayData.cities[activeCity];
+      const cityName = cityData.name;
 
-    const updatedCityData = {
-      ...cityData,
-      activities: attractionsData[cityName] || []
-    };
+      const updatedCityData = {
+        ...cityData,
+        activities: attractionsData[cityName] || []
+      };
 
-    setCurrentCityData(updatedCityData);
-    setSelectedAttraction(null);
-    setNearestMetro(null);
-    setWalkingRoute(null);
-    setTour(null);
-    setHotel(cityData.hotel);
+      setCurrentCityData(updatedCityData);
+      setSelectedAttraction(null);
+      setNearestMetro(null);
+      setWalkingRoute(null);
+      setTour(null);
+      setHotel(cityData.hotel);
 
-    if (activeDay === 2) {
-      fetchTransportData('Amsterdam', 'Brussels');
-    } else if (activeDay === 4) {
-      fetchTransportData('Brussels', 'Paris');
-    } else {
-      setTransportData(null);
+      if (activeDay === 2) {
+        fetchTransportData('Amsterdam', 'Brussels');
+      } else if (activeDay === 4) {
+        fetchTransportData('Brussels', 'Paris');
+      } else {
+        setTransportData(null);
+      }
+
+      // Fetch the newest tour for the current day and city
+      fetchNewestTour(activeDay, cityName);
     }
-
-    fetchSavedTours(activeDay);
   }, [activeDay, activeCity]);
 
   const fetchStarredAttractions = async (day) => {
@@ -113,28 +115,35 @@ const TripPlanner = () => {
     }
   };
 
-  const fetchSavedTours = async (day) => {
-    try {
-      const response = await axios.get(`${API_URL}/saved-tours?day=${day}`);
-      setTours(prevTours => ({
-        ...prevTours,
-        [day]: response.data
-      }));
-      setToursCount(prevCount => ({
-        ...prevCount,
-        [day]: response.data.length
-      }));
-    } catch (error) {
-      console.error('Error fetching saved tours:', error);
+  const fetchDirectionsForTour = async (tourStops) => {
+    const directionsData = [];
+    for (let i = 0; i < tourStops.length - 1; i++) {
+      const origin = `${tourStops[i].latitude},${tourStops[i].longitude}`;
+      const destination = `${tourStops[i + 1].latitude},${tourStops[i + 1].longitude}`;
+
+      try {
+        const response = await axios.post(`${API_URL}/directions`, {
+          origin,
+          destination,
+          modes: ['walking', 'transit', 'driving']
+        });
+
+        directionsData.push(response.data);
+      } catch (error) {
+        console.error('Error fetching directions:', error);
+      }
     }
+    return directionsData;
   };
 
   const handleDayChange = (newDay) => {
     setActiveDay(newDay);
-    if (tripData[newDay].cities.length <= activeCity) {
+    if (newDay !== 'overview' && tripData[newDay].cities.length <= activeCity) {
       setActiveCity(0);
     }
-    fetchStarredAttractions(newDay);
+    if (newDay !== 'overview') {
+      fetchStarredAttractions(newDay);
+    }
   };
 
   const handleSelectAttraction = (attraction, metro) => {
@@ -185,13 +194,45 @@ const TripPlanner = () => {
     });
   };
 
+  const fetchNewestTour = async (day, city) => {
+    try {
+      const response = await axios.get(`${API_URL}/newest-tour`, {
+        params: { day, city }
+      });
+      if (response.data) {
+        const tourData = response.data.tour_data;
+        setTour(tourData);
+        setIsTourCreated(true);
+        setIsTourSaved(true);
+        setSummary(tourData.summary || '');
+        setTips(tourData.tips || '');
+        
+        if (tourData.tour) {
+          const directionsData = await fetchDirectionsForTour(tourData.tour);
+          setDirections(directionsData);
+        }
+      } else {
+        setTour(null);
+        setIsTourCreated(false);
+        setIsTourSaved(false);
+        setSummary('');
+        setTips('');
+        setDirections(null);
+      }
+    } catch (error) {
+      console.error('Error fetching newest tour:', error);
+    }
+  };
+
   const handleCreateTour = async (selectedAttractions) => {
+    setIsCreatingTour(true);
     setIsTourCreating(true);
 
     try {
       const response = await axios.post(`${API_URL}/create-tour`, {
         attractions: selectedAttractions,
-        day: activeDay + 1,
+        day: activeDay,
+        city: currentCityData.name,
       });
 
       if (response.data && response.data.tour) {
@@ -211,9 +252,11 @@ const TripPlanner = () => {
         const directionsData = await fetchDirectionsForTour(tourWithCoordinates.tour);
         setDirections(directionsData);
 
+        // Automatically save the tour
+        await handleSaveTour(tourWithCoordinates);
+
         setActiveDetail('tour');
         setIsTourCreated(true);
-        setIsTourSaved(false);
         setSummary(tourWithCoordinates.summary || '');
         setTips(tourWithCoordinates.tips || '');
       } else {
@@ -222,52 +265,44 @@ const TripPlanner = () => {
     } catch (error) {
       console.error('Error creating tour:', error);
     } finally {
+      setIsCreatingTour(false);
       setIsTourCreating(false);
     }
   };
 
-  const fetchDirectionsForTour = async (tourStops) => {
-    const directionsData = [];
-    for (let i = 0; i < tourStops.length - 1; i++) {
-      const origin = `${tourStops[i].latitude},${tourStops[i].longitude}`;
-      const destination = `${tourStops[i + 1].latitude},${tourStops[i + 1].longitude}`;
-
-      try {
-        const response = await axios.post(`${API_URL}/directions`, {
-          origin,
-          destination,
-          modes: ['walking', 'transit', 'driving']
-        });
-
-        directionsData.push(response.data);
-      } catch (error) {
-        console.error('Error fetching directions:', error);
-      }
+  const handleDeleteTour = async () => {
+    try {
+      await axios.delete(`${API_URL}/delete-tour`, {
+        params: { day: activeDay, city: currentCityData.name }
+      });
+      setTour(null);
+      setIsTourCreated(false);
+      setIsTourSaved(false);
+      setSummary('');
+      setTips('');
+      setDirections(null);
+    } catch (error) {
+      console.error('Error deleting tour:', error);
     }
-    return directionsData;
   };
 
-  const handleSaveTour = async () => {
+  const handleSaveTour = async (tourData = tour) => {
     try {
       const tourDataToSave = {
-        ...tour,
+        ...tourData,
         summary,
         tips,
         directions
       };
 
-      const response = await axios.post(`${API_URL}/save-tour`, {
+      await axios.post(`${API_URL}/save-tour`, {
         day: activeDay,
         city: currentCityData.name,
         tourData: tourDataToSave
       });
 
       setIsTourSaved(true);
-      setToursCount(prevCount => ({ ...prevCount, [activeDay]: (prevCount[activeDay] || 0) + 1 }));
-      setTours(prevTours => ({ 
-        ...prevTours, 
-        [activeDay]: [...(prevTours[activeDay] || []), { ...response.data, tour_data: tourDataToSave }]
-      }));
+      setTour(tourDataToSave);
     } catch (error) {
       console.error('Error saving tour:', error);
     }
@@ -281,57 +316,16 @@ const TripPlanner = () => {
     setTips(newTips);
   };
 
-  const handleRouteSelect = (route, steps) => {
+  const handleSelectTransportRoute = (route) => {
     setSelectedRoute(route);
-    setSelectedRouteSteps(steps);
+    setSelectedRouteSteps(route ? route.steps : null);
   };
 
-  const handleSelectTour = (tourId) => {
-    if (tourId === 'new') {
-      setTour(null);
-      setIsTourCreated(false);
-      setIsTourSaved(false);
-      setSummary('');
-      setTips('');
-      setDirections(null);
-    } else {
-      const selectedTour = tours[activeDay][tourId];
-      if (selectedTour) {
-        let tourData;
-        if (typeof selectedTour.tour_data === 'string') {
-          try {
-            tourData = JSON.parse(selectedTour.tour_data);
-          } catch (error) {
-            console.error('Error parsing tour data:', error);
-            tourData = null;
-          }
-        } else if (typeof selectedTour.tour_data === 'object') {
-          tourData = selectedTour.tour_data;
-        } else {
-          console.error('Invalid tour data format');
-          tourData = null;
-        }
-
-        if (tourData) {
-          setTour(tourData);
-          setSummary(tourData.summary || '');
-          setTips(tourData.tips || '');
-          setDirections(tourData.directions || null);
-          setIsTourCreated(true);
-          setIsTourSaved(true);
-
-          if ((activeDay === 2 && currentCityData.name === 'Brussels') || 
-              (activeDay === 4 && currentCityData.name === 'Paris')) {
-            fetchTransportData(activeDay === 2 ? 'Amsterdam' : 'Brussels', currentCityData.name);
-          }
-        } else {
-          console.error('Selected tour data is invalid or missing');
-        }
-      } else {
-        console.error('Selected tour not found');
-      }
+  const handleSelectDetail = (detail) => {
+    setActiveDetail(detail);
+    if (detail === 'tour' && !tour && currentCityData) {
+      fetchNewestTour(activeDay, currentCityData.name);
     }
-    setActiveDetail('tour');
   };
 
   return (
@@ -344,19 +338,17 @@ const TripPlanner = () => {
           activeCity={activeCity}
           setActiveCity={setActiveCity}
           activeDetail={activeDetail}
-          setActiveDetail={setActiveDetail}
+          setActiveDetail={handleSelectDetail}
           isTourCreated={isTourCreated}
           isTourSaved={isTourSaved}
-          toursCount={toursCount}
-          onSaveTour={handleSaveTour}
-          onSelectTour={handleSelectTour}
           isTransportAvailable={!!transportData}
-          isTourAvailable={toursCount[activeDay] > 0 || isTourCreated}
         />
       </div>
       <div className="trip-planner__content">
         <div className="trip-planner__detail-view">
-          {currentCityData && (
+          {activeDay === 'overview' ? (
+            <TripOverview transportData={transportData} />
+          ) : currentCityData && (
             <DetailView
               data={currentCityData[activeDetail === 'tour' ? 'activities' : activeDetail]}
               type={activeDetail}
@@ -372,10 +364,12 @@ const TripPlanner = () => {
               isTourSaved={isTourSaved}
               tour={tour}
               attractionsData={currentCityData.activities}
-              activeDay={activeDay + 1}
+              activeDay={activeDay}
               hotel={hotel}
               transportData={transportData}
-              onRouteSelect={handleRouteSelect}
+              setSelectedTransportRoute={handleSelectTransportRoute}
+              onDeleteTour={handleDeleteTour}
+              isCreatingTour={isCreatingTour}
               selectedRoute={selectedRoute}
               selectedRouteSteps={selectedRouteSteps}
               onSummaryChange={handleSummaryChange}
@@ -383,6 +377,7 @@ const TripPlanner = () => {
               summary={summary}
               tips={tips}
               directions={directions}
+              isTourCreated={isTourCreated}
             />
           )}
         </div>

@@ -4,30 +4,119 @@
   backdrop-filter: blur(10px);
   border-radius: 1rem;
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
-  padding: 1rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 1rem 0;
+  margin: 5px;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* Day selector */
-.day-selector {
+/* Modern day selector */
+.modern-day-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  margin-bottom: 1rem;
+  padding: 0.3rem 0;
+  border-radius: 8px;
 }
 
-.MuiSelect-select {
-  padding: 0.75rem;
+.day-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  margin: 0 2px;
+}
+
+.day-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ff9800;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.day-button:hover::before {
+  opacity: 0.1;
+  transform: scale(1);
+}
+
+.day-button.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.day-number {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #495057;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.day-label {
+  font-size: 0.5rem;
+  color: #6c757d;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.day-button.active .day-number,
+.day-button.active .day-label {
+  color: white;
+}
+
+/* Overview button styles */
+.overview-button {
+  background-color: #4caf50;
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.overview-button:hover {
+  background-color: #45a049;
+}
+
+.overview-button.active {
+  background-color: #357a38;
 }
 
 /* City selector */
 .city-selector {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   background-color: rgba(233, 236, 239, 0.8);
-  margin-top: 10px;
+  margin-top: 0.5rem;
   border-radius: 0.75rem;
   overflow: hidden;
   display: flex;
@@ -40,7 +129,7 @@
   flex-grow: 1;
   border-radius: 0;
   font-weight: 500;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   transition: all 0.3s ease;
   text-transform: none;
 }
@@ -77,15 +166,15 @@
 .MuiButtonGroup-root .MuiButton-root {
   border: none;
   color: #495057;
-  padding: 0.75rem;
+  padding: 0.5rem;
   transition: all 0.3s ease;
   flex-grow: 1;
   border-radius: 0.5rem;
   text-transform: none;
   font-weight: 500;
   min-width: 0;
-  flex-basis: calc(25% - 8px);
-  margin: 4px;
+  flex-basis: calc(50% - 4px);
+  margin: 2px;
 }
 
 .MuiButtonGroup-root .MuiButton-root:hover {
@@ -102,34 +191,37 @@
 /* Mobile styles */
 @media (max-width: 600px) {
   .controls {
-    padding: 0.75rem;
+    padding: 0.3rem;
+    width: 100%;
   }
 
-  .MuiSelect-select {
-    font-size: 0.875rem;
-    padding: 0.5rem;
+  .modern-day-selector {
+    padding: 0.1rem;
+  }
+
+  .day-button,
+  .overview-button {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 1px;
+  }
+
+  .day-number {
+    font-size: 0.7rem;
+  }
+
+  .day-label {
+    font-size: 0.4rem;
+  }
+
+  .overview-button {
+    font-size: 0.8rem;
   }
 
   .city-selector .MuiButton-root,
   .MuiButtonGroup-root .MuiButton-root {
-    padding: 0.5rem;
-    font-size: 0.75rem;
-    min-width: 0;
-  }
-
-  .city-selector,
-  .detail-selector {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .city-selector .MuiButton-root {
-    flex-basis: calc(50% - 4px);
-    margin: 2px;
-  }
-
-  .MuiButtonGroup-root .MuiButton-root {
-    flex-basis: calc(50% - 8px);
+    padding: 0.3rem;
+    font-size: 0.7rem;
   }
 }
 

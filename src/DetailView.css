@@ -1,23 +1,22 @@
 .detail-view {
-  background: #ffffff;
   color: var(--text-primary);
-  padding: 24px;
-  border-radius: 8px;
+   border-radius: 8px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   transition: box-shadow 0.3s ease;
+  margin-left: 2px;
 }
 
 .detail-view:hover {
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
-/* Removed glass-effect class */
 
 .detail-view__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  text-align: center !important;
+  margin-bottom: 12px;
 }
 
 .detail-view__title {
@@ -53,11 +52,11 @@
 }
 
 .detail-view__content {
-  margin-top: 16px;
+  margin-top: 6px;
 }
 
 .tour-display, .transport-view {
-  margin-top: 16px;
+  margin-top: 6px;
 }
 
 .tour-display__title, .transport-view__title {
@@ -69,7 +68,7 @@
 
 @media (max-width: 600px) {
   .detail-view {
-    padding: 16px;
+    padding: 6px;
   }
 
   .detail-view__header {

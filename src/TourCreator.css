@@ -2,7 +2,7 @@
 .tour-creator {
   background-color: var(--surface-color);
   color: var(--text-primary);
-  padding: 24px;
+  padding: 0px;
   border-radius: 8px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   transition: box-shadow 0.3s ease;

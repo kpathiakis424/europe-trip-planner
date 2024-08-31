@@ -3,13 +3,11 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import TourIcon from '@mui/icons-material/Tour';
 import './DetailSelector.css';
-import './DetailSelectorBadge.css';
 
 const DetailSelector = ({
   activeDetail,
   setActiveDetail,
-  handleTourButtonClick,
-  toursCount,
+  isTourCreated
 }) => {
   return (
     <div className="detail-selector-container">
@@ -27,15 +25,10 @@ const DetailSelector = ({
           <LocalActivityIcon /> Activities
         </button>
         <button
-          onClick={handleTourButtonClick}
-          className={`${activeDetail === 'tour' ? 'active' : ''} tour-button`}
+          onClick={() => setActiveDetail('tour')}
+          className={`${activeDetail === 'tour' ? 'active' : ''} ${isTourCreated ? 'tour-created' : ''}`}
         >
           <TourIcon /> Guide
-          {toursCount > 0 && (
-            <span className="tour-badge">
-              <span className="tour-badge-content">{toursCount}</span>
-            </span>
-          )}
         </button>
       </div>
     </div>

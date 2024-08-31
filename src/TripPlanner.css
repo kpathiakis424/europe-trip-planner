@@ -9,6 +9,7 @@
 
 .trip-planner__controls {
   flex-shrink: 0;
+  padding: 0px;
   /* Add any additional styles for the Controls component */
 }
 
@@ -18,7 +19,7 @@
   flex-direction: column;
   overflow: hidden;
 }
-
+  
 .trip-planner__detail-view {
   flex: 1;
   overflow-y: auto;
@@ -38,7 +39,17 @@
 
 /* Responsive adjustments */
 @media (min-width: 768px) {
+  .trip-planner__content {
+    flex-direction: row;
+  }
+
   .trip-planner__detail-view {
-      height: 60vh;
+    width: 60%;
+    height: 100%;
+  }
+
+  .trip-planner__map-container {
+    width: 40%;
+    height: 100%;
   }
 }

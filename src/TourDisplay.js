@@ -21,10 +21,9 @@ import {
   ExpandMore,
   ExpandLess,
   Add as AddIcon,
-  Save as SaveIcon,
-  Train as TrainIcon
+  Save as SaveIcon
 } from '@mui/icons-material';
-import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot, TimelineOppositeContent } from '@mui/lab';
+import TransportView from './TransportView';
 import './TourDisplay.css';
 
 const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange, onSaveTour, isSaving, directions, transportData }) => {
@@ -32,7 +31,7 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
   const [expandedAlternatives, setExpandedAlternatives] = useState({});
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
   const [isTipsExpanded, setIsTipsExpanded] = useState(true);
-  const [selectedTransportRoute, setSelectedTransportRoute] = useState(null);
+  const [expandedTransportRoute, setExpandedTransportRoute] = useState(null);
 
   const renderStopIcon = (index, isHotel) => {
     if (isHotel) {
@@ -50,7 +49,7 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
   };
 
   const renderTransportIcon = (mode) => {
-    switch (mode) {
+    switch (mode.toLowerCase()) {
       case 'walking':
         return <DirectionsWalk />;
       case 'transit':
@@ -77,10 +76,10 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
 
     if (walkingRoute && walkingRoute.duration < 1800) { // Less than 30 minutes
       return walkingRoute;
-    } else if (transitRoute) {
+    } else if (transitRoute && transitRoute.duration < (drivingRoute?.duration || Infinity)) {
       return transitRoute;
     } else {
-      return drivingRoute || walkingRoute || transitRoute;
+      return drivingRoute || transitRoute || walkingRoute;
     }
   };
 
@@ -142,93 +141,34 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
                 onClick={() => toggleAlternativesExpansion(index)}
                 sx={{ mt: 2 }}
               >
-                Show alternative routes
+                Show alternative routes ({alternativeRoutes.length})
               </Button>
               <Collapse in={expandedAlternatives[index]} timeout="auto" unmountOnExit>
                 {alternativeRoutes.map((route, altIndex) => (
-                  <Box key={altIndex} sx={{ mt: 2 }}>
+                  <Box key={altIndex} sx={{ mt: 2, borderLeft: '2px solid #ccc', pl: 2 }}>
                     <Typography variant="subtitle2" fontWeight="bold">
                       {`${route.mode.charAt(0).toUpperCase() + route.mode.slice(1)} Alternative`}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {`${Math.round(route.duration / 60)} minutes (${(route.distance / 1000).toFixed(1)} km)`}
                     </Typography>
-                    {route.steps && route.steps.map((step, stepIndex) => renderRouteStep(step))}
+                    <Button
+                      size="small"
+                      onClick={() => toggleRouteExpansion(`${index}-alt-${altIndex}`)}
+                      endIcon={expandedRoutes[`${index}-alt-${altIndex}`] ? <ExpandLess /> : <ExpandMore />}
+                    >
+                      {expandedRoutes[`${index}-alt-${altIndex}`] ? 'Hide Details' : 'Show Details'}
+                    </Button>
+                    <Collapse in={expandedRoutes[`${index}-alt-${altIndex}`]} timeout="auto" unmountOnExit>
+                      <Box sx={{ mt: 1 }}>
+                        {route.steps && route.steps.map((step, stepIndex) => renderRouteStep(step))}
+                      </Box>
+                    </Collapse>
                   </Box>
                 ))}
               </Collapse>
             </>
           )}
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const renderTransportCard = () => {
-    if (!transportData || !transportData.options || transportData.options.length === 0) {
-      return null;
-    }
-
-    return (
-      <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>Transport to {transportData.destination}</Typography>
-          {transportData.options.map((option, index) => (
-            <Box key={index} className="transport-route">
-              <div className="transport-route__header">
-                <Typography variant="subtitle1">
-                  <TrainIcon sx={{ mr: 1 }} />
-                  {option.type || 'Train'} - {option.duration}
-                </Typography>
-                <Typography variant="body2">
-                  Depart: {option.startTime} - Arrive: {option.endTime}
-                </Typography>
-              </div>
-              <Button 
-                variant="contained" 
-                onClick={() => setSelectedTransportRoute(option)}
-                className="MuiButton-root"
-              >
-                View Route
-              </Button>
-              {selectedTransportRoute === option && (
-                <Timeline position="right" className="transport-route__steps">
-                  {option.steps && option.steps.map((step, stepIndex) => (
-                    <TimelineItem key={stepIndex}>
-                      <TimelineOppositeContent className="transport-step__time">
-                        <Typography variant="body2">
-                          {step.transit_details ? step.transit_details.departure_time.text : ''}
-                        </Typography>
-                      </TimelineOppositeContent>
-                      <TimelineSeparator>
-                        <TimelineDot color="primary" className="transport-step__icon">
-                          {renderTransportIcon(step.travel_mode.toLowerCase())}
-                        </TimelineDot>
-                        {stepIndex < option.steps.length - 1 && <TimelineConnector />}
-                      </TimelineSeparator>
-                      <TimelineContent className="transport-step__details">
-                        <Typography variant="h6">
-                          {step.transit_details ? step.transit_details.departure_stop.name : 'Walk'}
-                        </Typography>
-                        {step.transit_details && (
-                          <>
-                            <Typography variant="body2">
-                              {step.transit_details.line.short_name || step.transit_details.line.name} {step.transit_details.headsign}
-                            </Typography>
-                            <Typography variant="body2">To: {step.transit_details.arrival_stop.name}</Typography>
-                          </>
-                        )}
-                        <Typography variant="body2">{step.duration.text}</Typography>
-                        {step.travel_mode === 'WALKING' && (
-                          <Typography variant="body2">{step.html_instructions}</Typography>
-                        )}
-                      </TimelineContent>
-                    </TimelineItem>
-                  ))}
-                </Timeline>
-              )}
-            </Box>
-          ))}
         </CardContent>
       </Card>
     );
@@ -241,6 +181,15 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
       <Typography variant="h5" gutterBottom>
         Tour for Day {tour.day}
       </Typography>
+
+      {/* Transport View */}
+      {transportData && (
+        <TransportView
+          transportData={transportData}
+          expandedRoute={expandedTransportRoute}
+          onExpandClick={setExpandedTransportRoute}
+        />
+      )}
 
       {/* Summary Card */}
       <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
@@ -299,9 +248,6 @@ const TourDisplay = ({ tour, hotel, summary, tips, onSummaryChange, onTipsChange
       <Typography variant="h6" gutterBottom>
         Itinerary:
       </Typography>
-
-      {/* Transport Card (if available) */}
-      {transportData && renderTransportCard()}
 
       {/* Start: Hotel */}
       <Card elevation={3} sx={{ mb: 2, borderRadius: 2 }}>
